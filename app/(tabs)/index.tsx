@@ -1,98 +1,110 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { CounterButtons, DEFAULT_COUNT } from './custom-button';
+
+// ─── Colour tokens ────────────────────────────────────────────────────────────
+
+const C = {
+  bg:       '#F5EFE6',
+  card:     '#6B0F1A',
+  cardText: '#F5EFE6',
+  cardSub:  'rgba(245,239,230,0.55)',
+  headline: '#2E0A10',
+  body:     '#7A4A50',
+};
+
+// ─── Screen ───────────────────────────────────────────────────────────────────
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [count, setCount] = useState(DEFAULT_COUNT);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const handleCountChange = useCallback((next: number) => {
+    setCount(next);
+  }, []);
+
+  return (
+    <View style={styles.screen}>
+
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.eyebrow}>COUNTER</Text>
+        <Text style={styles.headline}>Component | State | Props</Text>
+      </View>
+
+      {/* Count card — display only */}
+      <View style={styles.card}>
+        <Text style={styles.cardLabel}>Current Count</Text>
+        <Text style={styles.countNumber}>{count}</Text>
+        <Text style={styles.cardHint}>hold buttons to change fast</Text>
+      </View>
+
+      {/* All button logic lives in CounterButtons */}
+      <CounterButtons onCountChange={handleCountChange} />
+
+    </View>
   );
 }
 
+// ─── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  screen: {
+    flex: 1,
+    backgroundColor: C.bg,
+    paddingHorizontal: 24,
+    paddingTop: 64,
+    paddingBottom: 40,
+    gap: 16,
   },
-  stepContainer: {
-    gap: 8,
+  header: {
     marginBottom: 8,
+    gap: 6,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  eyebrow: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 3,
+    color: C.body,
+    textTransform: 'uppercase',
+  },
+  headline: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: C.headline,
+    lineHeight: 38,
+  },
+  card: {
+    backgroundColor: C.card,
+    borderRadius: 20,
+    paddingVertical: 36,
+    paddingHorizontal: 28,
+    alignItems: 'center',
+    gap: 4,
+    shadowColor: C.card,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+    elevation: 8,
+    marginBottom: 4,
+  },
+  cardLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.5,
+    color: C.cardSub,
+    textTransform: 'uppercase',
+  },
+  countNumber: {
+    fontSize: 80,
+    fontWeight: '900',
+    color: C.cardText,
+    lineHeight: 88,
+  },
+  cardHint: {
+    fontSize: 11,
+    color: C.cardSub,
+    marginTop: 4,
+    fontStyle: 'italic',
   },
 });
